@@ -1,8 +1,12 @@
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
+from langchain.llms import OpenAI
 from langchain.vectorstores import FAISS
 from langchain.embeddings.openai import OpenAIEmbeddings
+from langchain.chains import ConversationalRetrievalChain
+from langchain.memory import ConversationBufferMemory
+
 from dotenv import load_dotenv
 
 
@@ -48,23 +52,26 @@ def main():
         
         text_chunks = get_chunks(pdf_text)
         
-        st.session_state.vector_store = get_vectorstore(text_chunks)
+        vectorstore = get_vectorstore(text_chunks)
+        
+        memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
+        st.session_state.conversation = ConversationalRetrievalChain.from_llm(
+          OpenAI(temperature=0), 
+          vectorstore.as_retriever(), 
+          memory=memory
+        )
         
         st.success('Done! You can now ask questions to your PDFs')
 
 
   st.title('Chat with Multiple PDFs :books:')
   user_question = st.text_input('Ask a question about the PDFs')
-  if st.button('Ask'):
+  if user_question is not None and user_question != '':
     with st.spinner('Searching...'):
-      if user_question:
-        docs = st.session_state.vector_store.similarity_search(user_question)
-        st.write(docs)
-        
-      else:
-        st.warning('Please enter a question')
-  
-
+      response = st.session_state.conversation({'question': user_question})
+      st.write(response)
+  else:
+    st.write('Waiting for your question...')
 
 if __name__ == '__main__':
     main()
