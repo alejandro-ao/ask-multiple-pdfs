@@ -1,5 +1,9 @@
 import streamlit as st
 from PyPDF2 import PdfReader
+from langchain.text_splitter import CharacterTextSplitter
+from langchain.vectorstores import FAISS
+from langchain.embeddings.openai import OpenAIEmbeddings
+from dotenv import load_dotenv
 
 
 def get_pdf_text(pdf_documents):
@@ -9,14 +13,31 @@ def get_pdf_text(pdf_documents):
     for page in pdf_reader.pages:
       text += page.extract_text()
   return text
+
+
+def get_chunks(text):
+    text_splitter = CharacterTextSplitter(
+      separator="\n",
+      chunk_size=1000,
+      chunk_overlap=200,
+      length_function=len
+    )
+    chunks = text_splitter.split_text(text)
+    return chunks
   
+  
+def get_embeddings(text_chunks):
+  embeddings = OpenAIEmbeddings()
+  
+  vector_store = FAISS.from_texts(text_chunks, embeddings)
+  
+  return vector_store
 
 
 def main():
+  load_dotenv()
   st.set_page_config(page_title='Chat Multiple PDFs',page_icon=':books:')
   
-  if 'text' not in st.session_state:
-    st.session_state.text = ""
   
   with st.sidebar:
     pdf_documents = st.file_uploader('Upload your PDF file', type=['pdf'], accept_multiple_files=True)
@@ -25,17 +46,16 @@ def main():
       with st.spinner('Processing...'):
         pdf_text = get_pdf_text(pdf_documents)
         
-        st.session_state.text = pdf_text
+        text_chunks = get_chunks(pdf_text)
         
-        # text_chunks = get_chunks(pdf_text)
+        st.session_state.vector_store = get_embeddings(text_chunks)
         
-        st.success('Done!')
+        st.success('Done! You can now ask questions to your PDFs')
 
 
   st.title('Chat with Multiple PDFs :books:')
   st.text_input('Ask a question about the PDFs')
 
-  st.write(st.session_state.text)
 
 if __name__ == '__main__':
     main()
