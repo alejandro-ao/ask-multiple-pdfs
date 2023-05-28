@@ -1,35 +1,13 @@
 import streamlit as st
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
-from langchain.llms import OpenAI
+from langchain.llms import OpenAI, HuggingFaceHub
 from langchain.vectorstores import FAISS
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain.chains import ConversationalRetrievalChain
 from langchain.memory import ConversationBufferMemory
-
-bot_msg_container_html_template = '''
-<div style='background-color: #475063; padding: 1.5rem; border-radius: 5px; margin-bottom: 10px; display: flex'>
-    <div style="width: 20%; display: flex; justify-content: center">
-        <img src="https://i.ibb.co/yVFMnvj/Photo-logo-4.png" style="max-height: 50px; max-width: 50px; border-radius: 50%;">
-    </div>
-    <div style="width: 80%;">
-        $MSG
-    </div>
-</div>
-'''
-
-user_msg_container_html_template = '''
-<div style='background-color: #2b313e; padding: 1.5rem; border-radius: 5px; margin-bottom: 10px; display: flex'>
-    <div style="width: 78%">
-        $MSG
-    </div>
-    <div style="width: 20%; margin-left: auto; display: flex; justify-content: center;">
-        <img src="https://i.ibb.co/dpRdwK0/Photo-logo.jpg" style="max-width: 50px; max-height: 50px; float: right; border-radius: 50%;">
-    </div>    
-</div>
-'''
-
 from dotenv import load_dotenv
+from htmlTemplates import css, user_template, bot_template
 
 
 def get_pdf_text(pdf_documents):
@@ -83,8 +61,10 @@ def main():
         
         memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
         
+        # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
+        
         st.session_state.conversation = ConversationalRetrievalChain.from_llm(
-          OpenAI(temperature=0), 
+          OpenAI(), 
           vectorstore.as_retriever(), 
           memory=memory
         )
@@ -94,6 +74,7 @@ def main():
 
   st.title('Chat with Multiple PDFs :books:')
   user_question = st.text_input('Ask a question about the PDFs')
+  st.markdown(css, unsafe_allow_html=True)
   if user_question is not None and user_question != '':
     with st.spinner('Searching...'):
       response = st.session_state.conversation({'question': user_question})
@@ -101,15 +82,11 @@ def main():
       
       for i, message in enumerate(st.session_state.history):
         if i % 2 == 0:
-            st.write(user_msg_container_html_template.replace("$MSG", message.content), unsafe_allow_html=True)
+            st.write(user_template.replace("$MSG", message.content), unsafe_allow_html=True)
         else:
-            st.write(bot_msg_container_html_template.replace("$MSG", message.content), unsafe_allow_html=True)
-      
-      
-  else:
+            st.write(bot_template.replace("$MSG", message.content), unsafe_allow_html=True)    
+  if st.session_state.history is None or len(st.session_state.history) == 0:
     st.write('Waiting for your question...')
-  
-  # st.write(user_msg_container_html_template.replace("$MSG", "hello there"), unsafe_allow_html=True)
 
 if __name__ == '__main__':
     main()

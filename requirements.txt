@@ -2,4 +2,3 @@ langchain==0.0.173
 PyPDF2==3.0.1
 python-dotenv==1.0.0
 streamlit==1.18.1
-streamlit_chat==0.0.2.2
