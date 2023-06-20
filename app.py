@@ -52,9 +52,11 @@ def get_conversation_chain(vectorstore):
 
 
 def handle_userinput(user_question):
+    # get responses from conversion chain 
     response = st.session_state.conversation({'question': user_question})
+    # updates the chat history with responses
     st.session_state.chat_history = response['chat_history']
-
+    # print the chat history 
     for i, message in enumerate(st.session_state.chat_history):
         if i % 2 == 0:
             st.write(user_template.replace(
