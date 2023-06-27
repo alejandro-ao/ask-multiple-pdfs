@@ -25,6 +25,7 @@ css = '''
 }
 '''
 
+# we can replace the images for the profile 
 bot_template = '''
 <div class="chat-message bot">
     <div class="avatar">
