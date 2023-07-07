@@ -1,7 +1,8 @@
 import streamlit as st  #streamlit is the GUI 
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
-#langchain is used to interact with the models 
+#langchain is used to interact with the model
+from huggingface_endpoint import HuggingFaceEndpoint
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
@@ -10,7 +11,19 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 
 from htmlTemplates import css, bot_template, user_template
+from typing import Any, Dict, List, Mapping, Optional
+
+import requests
+from pydantic import Extra, root_validator
+
+from langchain.callbacks.manager import CallbackManagerForLLMRun
+from langchain.llms.base import LLM
+from langchain.llms.utils import enforce_stop_tokens
+from langchain.utils import get_from_dict_or_env
 from langchain.llms import HuggingFaceHub # hugging face can replace the openAI model
+import os
+
+
 #############################################################################################
 
 def get_pdf_text(pdf_docs):
@@ -30,7 +43,7 @@ def get_text_chunks(text):
         length_function=len
     )
     chunks = text_splitter.split_text(text)
-    print("chunk length:", len(chunks))
+    # print("chunk length:", len(chunks))
     return chunks
 
 
@@ -46,8 +59,10 @@ def get_vectorstore(text_chunks):
 
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
+    # llm = ChatOpenAI()
     # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":1024})
+    llm= HuggingFaceEndpoint(endpoint_url=os.getenv('ENDPOINT_URL'),task="text-generation",
+                              model_kwargs={"temperature":0.7, "max_new_token":512})
     memory = ConversationBufferMemory(
         memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
