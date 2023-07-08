@@ -22,6 +22,7 @@ from langchain.llms.utils import enforce_stop_tokens
 from langchain.utils import get_from_dict_or_env
 from langchain.llms import HuggingFaceHub # hugging face can replace the openAI model
 import os
+from wz13 import wizardVicuna13
 
 
 #############################################################################################
@@ -60,9 +61,21 @@ def get_vectorstore(text_chunks):
 
 def get_conversation_chain(vectorstore):
     # llm = ChatOpenAI()
-    # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":1024})
-    llm= HuggingFaceEndpoint(endpoint_url=os.getenv('ENDPOINT_URL'),task="text-generation",
-                              model_kwargs={"temperature":0.7, "max_new_token":512})
+#     llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs=
+#                          {"temperature":0.5, "max_length":1024,
+#                            "top_k": 30,
+#   "top_p": 0.9,
+#   "repetition_penalty": 1.02})
+
+#     llm= HuggingFaceEndpoint(endpoint_url=os.getenv('ENDPOINT_URL'),task="text-generation",
+#                               model_kwargs={"max_new_tokens": 512,
+#   "top_k": 30,
+#   "top_p": 0.9,
+#  "temperature": 0.2,
+#   "repetition_penalty": 1.02,})
+
+    llm=wizardVicuna13()
+
     memory = ConversationBufferMemory(
         memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(

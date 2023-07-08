@@ -5,14 +5,14 @@ import requests
 from pydantic import Extra, root_validator
 
 from langchain.callbacks.manager import CallbackManagerForLLMRun
-from langchain.llms.base import LLM
+from langchain.llms.base import LLM as lm
 from langchain.llms.utils import enforce_stop_tokens
 from langchain.utils import get_from_dict_or_env
 
 VALID_TASKS = ("text2text-generation", "text-generation", "summarization")
 
 
-class HuggingFaceEndpoint(LLM):
+class HuggingFaceEndpoint(lm):
     """Wrapper around HuggingFaceHub Inference Endpoints.
 
     To use, you should have the ``huggingface_hub`` python package installed, and the
@@ -33,8 +33,8 @@ class HuggingFaceEndpoint(LLM):
                 huggingfacehub_api_token="my-api-key"
             )
     """
-
-    endpoint_url: str = ""
+    
+    endpoint_url: Optional[str] = None
     """Endpoint URL to use."""
     task: Optional[str] = None
     """Task to call the model with.
@@ -55,8 +55,9 @@ class HuggingFaceEndpoint(LLM):
         huggingfacehub_api_token = get_from_dict_or_env(
             values, "huggingfacehub_api_token", "HUGGINGFACEHUB_API_TOKEN"
         )
+       
         try:
-            from huggingface_hub.hf_api import HfApi
+            from huggingface_hub import HfApi
 
             try:
                 HfApi(
@@ -75,6 +76,7 @@ class HuggingFaceEndpoint(LLM):
                 "Please install it with `pip install huggingface_hub`."
             )
         values["huggingfacehub_api_token"] = huggingfacehub_api_token
+    
         return values
 
     @property
@@ -126,6 +128,7 @@ class HuggingFaceEndpoint(LLM):
 
         # send request
         try:
+            print(self.endpoint_url, headers, parameter_payload)
             response = requests.post(
                 self.endpoint_url, headers=headers, json=parameter_payload
             )
@@ -136,9 +139,10 @@ class HuggingFaceEndpoint(LLM):
             raise ValueError(
                 f"Error raised by inference API: {generated_text['error']}"
             )
+        print(   generated_text)
         if self.task == "text-generation":
             # Text generation return includes the starter text.
-            text = generated_text[0]["generated_text"][len(prompt) :]
+            text = generated_text[0]["generated_text"]
         elif self.task == "text2text-generation":
             text = generated_text[0]["generated_text"]
         elif self.task == "summarization":
@@ -153,3 +157,4 @@ class HuggingFaceEndpoint(LLM):
             # stop tokens when making calls to huggingface_hub.
             text = enforce_stop_tokens(text, stop)
         return text
+    
