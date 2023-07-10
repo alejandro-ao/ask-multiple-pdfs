@@ -12,7 +12,6 @@ from langchain.chains import ConversationalRetrievalChain
 
 from htmlTemplates import css, bot_template, user_template
 from typing import Any, Dict, List, Mapping, Optional
-
 import requests
 from pydantic import Extra, root_validator
 
@@ -23,8 +22,12 @@ from langchain.utils import get_from_dict_or_env
 from langchain.llms import HuggingFaceHub # hugging face can replace the openAI model
 import os
 from wz13 import wizardVicuna13
+from getpass import getpass
+from langchain import PromptTemplate, LLMChain
+from repli import Replicate
 
-
+from langchain.llms.octoai_endpoint import OctoAIEndpoint
+from octoAICloud import OctoAiCloudLLM
 #############################################################################################
 
 def get_pdf_text(pdf_docs):
@@ -40,11 +43,11 @@ def get_text_chunks(text):
     text_splitter = CharacterTextSplitter(
         separator="\n",
         chunk_size=800, #the size of the chunk itself. 1000 characters 
-        chunk_overlap=200, #you may lose some context if you end in the middle. starts the next chunk a few characters before. 
+        chunk_overlap=0, #you may lose some context if you end in the middle. starts the next chunk a few characters before. 
         length_function=len
     )
     chunks = text_splitter.split_text(text)
-    # print("chunk length:", len(chunks))
+    print("chunk length:", len(chunks))
     return chunks
 
 
@@ -74,8 +77,25 @@ def get_conversation_chain(vectorstore):
 #  "temperature": 0.2,
 #   "repetition_penalty": 1.02,})
 
-    llm=wizardVicuna13()
+    # llm=wizardVicuna13()
+    
+    llm = Replicate(
+   model="replicate/vicuna-13b:6282abe6a492de4145d7bb601023762212f9ddbbe78278bd6771c8b3b2f2a13b",
+    # model="joehoover/falcon-40b-instruct:7eb0f4b1ff770ab4f68c3a309dd4984469749b7323a3d47fd2d5e09d58836d3c",
+input= {"max_length":8000,"max_new_tokens": 8000})
+  
+    # llm = OctoAIEndpoint(
+    #     model_kwargs={
+    #         "max_new_tokens": 200,
+    #         "temperature": 0.75,
+    #         "top_p": 0.95,
+    #         "repetition_penalty": 1,
+    #         "seed": None,
+    #         "stop": [],
+    #     },
+    # )
 
+    
     memory = ConversationBufferMemory(
         memory_key='chat_history', return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(
@@ -87,6 +107,7 @@ def get_conversation_chain(vectorstore):
 
 
 def handle_userinput(user_question):
+
     #this is the response from the llm 
     response = st.session_state.conversation({'question': user_question})
     # `st.write(response)`
