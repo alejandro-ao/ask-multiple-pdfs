@@ -113,17 +113,15 @@ class Replicate(LLM):
             key=lambda item: item[1].get("x-order", 0),
         )
         first_input_name = input_properties[0][0]
-        print("firstinput",first_input_name)
        
         inputs = {first_input_name: prompt, **self.input}
       
 
         prediction=replicate_python.predictions.create(version,input={**inputs, **kwargs})
-        print(**kwargs)
-        print('status',prediction.status)
+        print('prediction_ status',prediction.status)
 
         while prediction.status!=  'succeeded':
             prediction.reload()
        
-        print('end')
+        print('prediction: end')
         return ''.join(prediction.output)

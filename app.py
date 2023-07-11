@@ -2,7 +2,7 @@ import streamlit as st  #streamlit is the GUI
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 #langchain is used to interact with the model
-from huggingface_endpoint import HuggingFaceEndpoint
+from api.huggingface_endpoint import HuggingFaceEndpoint
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
@@ -11,23 +11,15 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 
 from htmlTemplates import css, bot_template, user_template
-from typing import Any, Dict, List, Mapping, Optional
-import requests
-from pydantic import Extra, root_validator
-
-from langchain.callbacks.manager import CallbackManagerForLLMRun
-from langchain.llms.base import LLM
-from langchain.llms.utils import enforce_stop_tokens
-from langchain.utils import get_from_dict_or_env
 from langchain.llms import HuggingFaceHub # hugging face can replace the openAI model
 import os
-from wz13 import wizardVicuna13
+from api.wz13 import wizardVicuna13
 from getpass import getpass
-from langchain import PromptTemplate, LLMChain
-from repli import Replicate
+from api.repli import Replicate
 
 from langchain.llms.octoai_endpoint import OctoAIEndpoint
-from octoAICloud import OctoAiCloudLLM
+from api.octoAICloud import OctoAiCloudLLM
+from config import config
 #############################################################################################
 
 def get_pdf_text(pdf_docs):
@@ -52,8 +44,6 @@ def get_text_chunks(text):
 
 
 def get_vectorstore(text_chunks):
-    # embeddings = OpenAIEmbeddings()
-    # embeddings = HuggingFaceInstructEmbeddings(model_name="hkunlp/instructor-xl")
     embeddings = HuggingFaceInstructEmbeddings(model_name="intfloat/e5-large-v2")
 
     #Faiss is a database that allows you to store these embeddings
@@ -61,40 +51,39 @@ def get_vectorstore(text_chunks):
     vectorstore = FAISS.from_texts(texts=text_chunks, embedding=embeddings)
     return vectorstore
 
+def switchLLM():
+    llm=None
+   
+    if config['LLM_Name']=='ChatOpenAI':
+        llm = ChatOpenAI()
+    elif config['LLM_Name']=='flan-t5-xxl':
+        llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs=
+                         {"temperature":0.5, "max_length":1024,
+                           "top_k": 30,"top_p": 0.9, "repetition_penalty": 1.02})
+    elif config['LLM_Name']=='huggingCustomEndpoint':
+        llm= HuggingFaceEndpoint(endpoint_url=os.getenv('ENDPOINT_URL'),task="text-generation",
+                              model_kwargs={"max_new_tokens": 512, "top_k": 30, "top_p": 0.9, "temperature": 0.2, "repetition_penalty": 1.02,})
+    elif config['LLM_Name']=='wizardVicuna13_local':
+        llm=wizardVicuna13()
+    elif config['LLM_Name']=='vicuna13b_replicate':
+        llm = Replicate(model="replicate/vicuna-13b:6282abe6a492de4145d7bb601023762212f9ddbbe78278bd6771c8b3b2f2a13b",
+                        input= {"max_length":8000,"max_new_tokens": 8000})
+    elif config['LLM_Name']=='falcon7b_octoAI':
+        llm = OctoAIEndpoint(
+            model_kwargs={
+                "max_new_tokens": 200,
+                "temperature": 0.75,
+                "top_p": 0.95,
+                "repetition_penalty": 1,
+                "seed": None,
+                "stop": [],
+            },
+        )
+    print('llm_model: ',config['LLM_Name'])
+    return llm
 
 def get_conversation_chain(vectorstore):
-    # llm = ChatOpenAI()
-#     llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs=
-#                          {"temperature":0.5, "max_length":1024,
-#                            "top_k": 30,
-#   "top_p": 0.9,
-#   "repetition_penalty": 1.02})
-
-#     llm= HuggingFaceEndpoint(endpoint_url=os.getenv('ENDPOINT_URL'),task="text-generation",
-#                               model_kwargs={"max_new_tokens": 512,
-#   "top_k": 30,
-#   "top_p": 0.9,
-#  "temperature": 0.2,
-#   "repetition_penalty": 1.02,})
-
-    # llm=wizardVicuna13()
-    
-    llm = Replicate(
-   model="replicate/vicuna-13b:6282abe6a492de4145d7bb601023762212f9ddbbe78278bd6771c8b3b2f2a13b",
-    # model="joehoover/falcon-40b-instruct:7eb0f4b1ff770ab4f68c3a309dd4984469749b7323a3d47fd2d5e09d58836d3c",
-input= {"max_length":8000,"max_new_tokens": 8000})
-  
-    # llm = OctoAIEndpoint(
-    #     model_kwargs={
-    #         "max_new_tokens": 200,
-    #         "temperature": 0.75,
-    #         "top_p": 0.95,
-    #         "repetition_penalty": 1,
-    #         "seed": None,
-    #         "stop": [],
-    #     },
-    # )
-
+    llm = switchLLM()
     
     memory = ConversationBufferMemory(
         memory_key='chat_history', return_messages=True)
