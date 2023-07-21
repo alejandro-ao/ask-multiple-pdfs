@@ -25,7 +25,7 @@ class OctoAiCloudLLM(LLM):
         """Configuration for this pydantic object."""
         extra = Extra.forbid
 
-    @root_validator()
+    @root_validator(allow_reuse=True)
     def validate_environment(cls, values: Dict) -> Dict:
         """Validate that api key and python package exists in environment."""
         values["octoai_api_token"] = get_from_dict_or_env(

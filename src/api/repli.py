@@ -42,7 +42,7 @@ class Replicate(LLM):
 
         extra = Extra.forbid
 
-    @root_validator(pre=True)
+    @root_validator(pre=True,allow_reuse=True)
     def build_extra(cls, values: Dict[str, Any]) -> Dict[str, Any]:
         """Build extra kwargs from additional params that were passed in."""
         all_required_field_names = {field.alias for field in cls.__fields__.values()}
@@ -61,7 +61,7 @@ class Replicate(LLM):
       
         return values
 
-    @root_validator()
+    @root_validator(allow_reuse=True)
     def validate_environment(cls, values: Dict) -> Dict:
         """Validate that api key and python package exists in environment."""
         replicate_api_token = get_from_dict_or_env(
@@ -115,7 +115,7 @@ class Replicate(LLM):
        
         inputs = {first_input_name: prompt, **self.input}
       
-
+        print('prompt:',inputs)
         prediction=replicate_python.predictions.create(version,input={**inputs, **kwargs})
         print('prediction_ status',prediction.status)
 
