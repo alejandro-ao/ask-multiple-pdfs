@@ -22,13 +22,26 @@ from api.octoAICloud import OctoAiCloudLLM
 from config import config
 #############################################################################################
 
-def get_pdf_text(pdf_docs):
+## ---- PDF upload
+pdf_uploaded_1 = PdfReader("pdf/file_1.pdf")
+pdf_uploaded_2 = PdfReader("pdf/file_2.pdf")
+pdf_uploaded_3 = PdfReader("pdf/file_3.pdf")
+pdf_uploaded_4 = PdfReader("pdf/file_4.pdf")
+pdf_uploaded_5 = PdfReader("pdf/file_5.pdf")
+
+def get_pdf_text(pdf_uploaded): # 여기 수정함 pdf_docs
     text = ""
-    for pdf in pdf_docs:
-        pdf_reader = PdfReader(pdf)
-        for page in pdf_reader.pages:
-            text += page.extract_text()
+
+    ##------ 미리 업로드된 파일 로드하기
+    for page in pdf_uploaded.pages:
+        text += page.extract_text()
     return text
+    
+    # for pdf in pdf_docs:
+    #     pdf_reader = PdfReader(pdf)
+    #     for page in pdf_reader.pages:
+    #         text += page.extract_text()
+    # return text
 
 
 def get_text_chunks(text):
@@ -127,22 +140,46 @@ def main():
     if "chat_history" not in st.session_state:
         st.session_state.chat_history = None
 
-    st.header("CIXD Senior Bot :books:")
+    st.header("CIxD Senior Bot :books:")
+    ## ---- Mode Selection
+    modeselect = st.selectbox('Select the Mode: ', ('Summary','Section Q&A', 'Free Talking','Topic Recommendation' ))
+    st.write('Selected Mode: ', modeselect)
+    modesumber = 1
+
+    if modeselect == 'Summary':
+        modenumber = 1
+    #     st.write('summary')
+
+    if modeselect == 'Section Q&A':
+        modenumber = 2
+
+    if modeselect == 'Free Talking':
+        modenumber = 3
+
+    if modeselect == 'Topic Recommendation':
+        modenumber = 4
+    
+
+    st.write('Mode Number: ', modenumber)
+
     #store the value of the text input. just string 
     user_question = st.text_input("Ask a question about to your senior:")
     if user_question:
         handle_userinput(user_question)
 
     with st.sidebar:
-        st.subheader("Your documents")
+        st.subheader("CIxD Papers")
+        st.caption("Select one or more papers to learn.")
+        ## ---- file uploader
         pdf_docs = st.file_uploader(
-            "Upload your PDFs here and click on 'Process'", accept_multiple_files=True) #this just lets us enable this function 
-        if st.button("Process"):
+           "Upload your PDFs here and click on 'Process'", accept_multiple_files=True) #this just lets us enable this function
+        
+        if st.button("Process"): 
             #all the process is going to be processed while the user sees a spinning wheel. The program is running and not frozen
             with st.spinner("Processing"): 
                 # get pdf text
                 # single string of the entire text 
-                raw_text = get_pdf_text(pdf_docs)
+                # raw_text = get_pdf_text(pdf_docs)
 
                 # get the text chunks
                 # a list of the chucks of text 
@@ -158,6 +195,126 @@ def main():
                 st.session_state.conversation = get_conversation_chain(
                     vectorstore)
 
+
+        if st.checkbox("Design Opportunities in Three Stages"): 
+            #all the process is going to be processed while the user sees a spinning wheel. The program is running and not frozen
+            with st.spinner("Processing"): 
+                # get pdf text
+                # single string of the entire text 
+                # raw_text = get_pdf_text(pdf_docs)
+                ##------------ soobin test
+                raw_text = get_pdf_text(pdf_uploaded_1)
+
+                # get the text chunks
+                # a list of the chucks of text 
+                text_chunks = get_text_chunks(raw_text)
+                #st.write(text_chunks)
+
+                # create vector store
+                vectorstore = get_vectorstore(text_chunks)
+
+                # create conversation chain
+                #everytime someone clicks on a button, streamlit tries to reload the code. so if in order for the variables to not disappear, we 
+                #want to save this to the streamlit session state 
+                #also, the session state is a global variable that can be accessed elswhere 
+    
+                st.session_state.conversation = get_conversation_chain(
+                    vectorstore)
+        # else :
+            # print ("unselected")
+            # st.session_state.chat_history = None
+                
+        if st.checkbox("Teaching-Learning Interaction"):
+            #all the process is going to be processed while the user sees a spinning wheel. The program is running and not frozen
+            with st.spinner("Processing"): 
+                # get pdf text
+                # single string of the entire text 
+                # raw_text = get_pdf_text(pdf_docs)
+                ##------------ soobin test
+                raw_text = get_pdf_text(pdf_uploaded_2)
+
+                # get the text chunks
+                # a list of the chucks of text 
+                text_chunks = get_text_chunks(raw_text)
+
+                # create vector store
+                vectorstore = get_vectorstore(text_chunks)
+
+                # create conversation chain
+                #everytime someone clicks on a button, streamlit tries to reload the code. so if in order for the variables to not disappear, we 
+                #want to save this to the streamlit session state 
+                #also, the session state is a global variable that can be accessed elswhere 
+                st.session_state.conversation = get_conversation_chain(
+                    vectorstore)
+                
+        if st.checkbox("Co-Performing Agent"):
+            #all the process is going to be processed while the user sees a spinning wheel. The program is running and not frozen
+            with st.spinner("Processing"): 
+                # get pdf text
+                # single string of the entire text 
+                # raw_text = get_pdf_text(pdf_docs)
+                ##------------ soobin test
+                raw_text = get_pdf_text(pdf_uploaded_3)
+
+                # get the text chunks
+                # a list of the chucks of text 
+                text_chunks = get_text_chunks(raw_text)
+
+                # create vector store
+                vectorstore = get_vectorstore(text_chunks)
+
+                # create conversation chain
+                #everytime someone clicks on a button, streamlit tries to reload the code. so if in order for the variables to not disappear, we 
+                #want to save this to the streamlit session state 
+                #also, the session state is a global variable that can be accessed elswhere 
+                st.session_state.conversation = get_conversation_chain(
+                    vectorstore)
+
+        if st.checkbox("Non-Finito Products"):
+            #all the process is going to be processed while the user sees a spinning wheel. The program is running and not frozen
+            with st.spinner("Processing"): 
+                # get pdf text
+                # single string of the entire text 
+                # raw_text = get_pdf_text(pdf_docs)
+                ##------------ soobin test
+                raw_text = get_pdf_text(pdf_uploaded_4)
+
+                # get the text chunks
+                # a list of the chucks of text 
+                text_chunks = get_text_chunks(raw_text)
+
+                # create vector store
+                vectorstore = get_vectorstore(text_chunks)
+
+                # create conversation chain
+                #everytime someone clicks on a button, streamlit tries to reload the code. so if in order for the variables to not disappear, we 
+                #want to save this to the streamlit session state 
+                #also, the session state is a global variable that can be accessed elswhere 
+                st.session_state.conversation = get_conversation_chain(
+                    vectorstore)
+
+        if st.checkbox("Ten-Minute Silence"):
+            #all the process is going to be processed while the user sees a spinning wheel. The program is running and not frozen
+            with st.spinner("Processing"): 
+                # get pdf text
+                # single string of the entire text 
+                # raw_text = get_pdf_text(pdf_docs)
+                ##------------ soobin test
+                raw_text = get_pdf_text(pdf_uploaded_5)
+
+                # get the text chunks
+                # a list of the chucks of text 
+                text_chunks = get_text_chunks(raw_text)
+
+                # create vector store
+                vectorstore = get_vectorstore(text_chunks)
+
+                # create conversation chain
+                #everytime someone clicks on a button, streamlit tries to reload the code. so if in order for the variables to not disappear, we 
+                #want to save this to the streamlit session state 
+                #also, the session state is a global variable that can be accessed elswhere 
+                st.session_state.conversation = get_conversation_chain(
+                    vectorstore)
 #if the app is being executed directly and not imported, then run the main func 
 if __name__ == '__main__': 
     main()
