@@ -68,6 +68,7 @@ def main():
                 with streamlit.spinner("Processing"): 
                     
                     ##SummaryMode
+                    #####Only one input should be posssible for summary mode
             
                     for index, checkedpdf in enumerate(pdf_checkbox):
                         if(checkedpdf):
@@ -84,7 +85,3 @@ def main():
   #########################################
 if __name__ == '__main__': 
     main()
-
-
-
-        
