@@ -111,7 +111,6 @@ class PDFHandler:
             sectionText[sectionName] = text
         return sectionText
     
-    @staticmethod
     def get_unfiltered_pdf_text(pdf):
         text = ""
         pdf_reader = PdfReader(pdf)
