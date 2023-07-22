@@ -60,11 +60,11 @@ def main():
             with st.spinner("Processing"): 
                 for index, checkedpdf in enumerate(pdf_checkbox):
                     if(checkedpdf):
-                        PDFHandler.get_pdf_text(pdf_file_names[index])
-                        raw_text+=PDFHandler.get_pdf_text(pdf_file_names[index])
+                        PDFHandler.get_unfiltered_pdf_text(pdf_file_names[index])
+                        raw_text+=PDFHandler.get_unfiltered_pdf_text(pdf_file_names[index])
                 
                 if(pdf_docs):
-                   raw_text=PDFHandler.get_pdf_text(pdf_docs)
+                   raw_text=PDFHandler.get_unfiltered_pdf_text(pdf_docs)
                 text_chunks = get_text_chunks(raw_text)
                 vectorstore = get_vectorstore(text_chunks)
                 st.session_state.conversation = get_conversation_chain(
