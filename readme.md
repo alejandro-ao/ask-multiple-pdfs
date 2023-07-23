@@ -3,7 +3,7 @@
 
 ## Introduction
 ------------
-CIxD Aipowered Studying System is a Python application that allows you to chat PDF documents, research papers to be specific. The application offers 4 modes; summarization, question generation, answer generation and topic recommendation. This app provides the option to choose a diverse range of language models to generate answers to your queries. Please note that the app will only respond to questions related to the loaded PDFs.
+CIxD AIpowered Studying System is a Python application that allows you to chat PDF documents, research papers to be specific. The application offers 4 modes; summarization, question generation, answer generation and topic recommendation. This app provides the option to choose a diverse range of language models to generate answers to your queries. Please note that the app will only respond to questions related to the loaded PDFs.
 
 ## How It Works
 ------------
