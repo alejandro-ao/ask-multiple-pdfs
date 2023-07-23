@@ -10,7 +10,7 @@ CIxD Aipowered Studying System is a Python application that allows you to chat P
 
 ## Dependencies and Installation
 ----------------------------
-To install the MultiPDF Chat App, please follow these steps:
+To install 'CIxD Aipowered Studying System', please follow these steps:
 
 1. Clone the repository to your local machine.
 
