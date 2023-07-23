@@ -1,11 +1,12 @@
 # CIxD Aipowered Studying System
 
-Demo: https://cixd-aipowered-studying-system.streamlit.app
-Blog: https://medium.com/@soccer0874/9f618e52940a
+Demo: https://cixd-aipowered-studying-system.streamlit.app  
+Blog: https://medium.com/@soccer0874/9f618e52940a  
+KAIST CixD Lab: http://cixd.kaist.ac.kr/  
 
 ## Introduction
 ------------
-CIxD AIpowered Studying System is a Python application that allows you to chat with PDF documents, KAIST ID Cixd lab research papers to be specific. The application offers 4 modes; summarization, question generation, answer generation and topic recommendation. This app provides the option to choose a diverse range of language models to generate answers to your queries. Please note that the app will only respond to questions related to the loaded PDFs.
+CIxD AIpowered Studying System is a Python application that allows you to chat with PDF documents, KAIST Cixd lab research papers to be specific. The application offers 4 modes; summarization, question generation, answer generation and topic recommendation. This app provides the option to choose a diverse range of language models to generate answers to your queries. Please note that the app will only respond to questions related to the loaded PDFs.
 
 ## How It Works
 ------------
