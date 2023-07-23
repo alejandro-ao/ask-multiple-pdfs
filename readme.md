@@ -1,7 +1,7 @@
 # CIxD Aipowered Studying System
 
 Demo: https://cixd-aipowered-studying-system.streamlit.app  
-Blog: https://medium.com/@soccer0874/9f618e52940a  
+Medium Blog: https://medium.com/@soccer0874/9f618e52940a  
 
 ## Introduction
 ------------
