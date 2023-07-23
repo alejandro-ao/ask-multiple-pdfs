@@ -16,7 +16,6 @@ def handle_userInput(user_question):
             streamlit.write(bot_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
 
-
 def main():
     #########variables##############
     pageTitle= "CIXD Senior Bot"
