@@ -29,6 +29,7 @@ To install 'CIxD Aipowered Studying System', please follow these steps:
    REPLICATE_API_TOKEN=''
    PDF_SERVICES_CLIENT_ID=''
    PDF_SERVICES_CLIENT_SECRET=''
+    ```
 
 
 ## Usage
