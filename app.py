@@ -23,7 +23,7 @@ def main():
     #########variables##############
     pageTitle= "CIxD AIPowered Studying System"
     pageIcon=':robot_face:'
-    modeOptions=['Summary','Section Q&A', 'Free Talking','Topic Recommendation' ]
+    modeOptions=['Summary','Question Generation','Answer Generation', 'Topic Recommendation']
     header= "CIxD AIPowered Studying System :robot_face:"
     fileUploadText="Upload your own PDF here and click on 'Process'"
     accept_multiple_files=False
