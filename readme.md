@@ -1,5 +1,6 @@
 # CIxD Aipowered Studying System
-[](https://cixd-aipowered-studying-system.streamlit.app/)
+
+Demo: https://cixd-aipowered-studying-system.streamlit.app
 
 ## Introduction
 ------------
