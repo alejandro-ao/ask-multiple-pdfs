@@ -115,7 +115,7 @@ class Replicate(LLM):
        
         inputs = {first_input_name: prompt, **self.input}
       
-        print('prompt:',inputs)
+        #print('prompt:',inputs)
         prediction=replicate_python.predictions.create(version,input={**inputs, **kwargs})
         print('prediction_ status',prediction.status)
 

@@ -25,15 +25,20 @@ from PyPDF2 import PdfReader
 
 class PDFHandler:
 
-    def __init__(self, inputPDFName, zipFileName) -> None:
+    def __init__(self, zipFileName=None,inputPDFName=None) -> None:
         load_dotenv()
         self.input_pdf = inputPDFName
         self.zip_file = zipFileName
         self.startingSection = "intro"
-
-        self.structurePDF()
-
-    def structurePDF(self):
+        self.streamData=''
+        
+    def setPdfFile(self,inputPDFName):
+        self.input_pdf=inputPDFName
+    
+    def setStreamData(self,data):
+        self.streamData=data
+        
+    def structurePDF(self,type):
         if os.path.isfile(self.zip_file):
             os.remove(self.zip_file)
 
@@ -46,7 +51,12 @@ class PDFHandler:
             )
             execution_context = ExecutionContext.create(credentials)
             extract_pdf_operation = ExtractPDFOperation.create_new()
-            source = FileRef.create_from_local_file(self.input_pdf)
+            source=None
+            if type=='stream':
+                source = FileRef.create_from_stream(self.streamData, 'application/pdf')
+            elif type=='local_file':
+                source = FileRef.create_from_local_file(self.input_pdf)
+
             extract_pdf_operation.set_input(source)
             extract_pdf_options: ExtractPDFOptions = (
                 ExtractPDFOptions.builder()
@@ -71,8 +81,9 @@ class PDFHandler:
         structuredData = self.getStructuredData()
         H1_sections = {}
         sections = {}
-        startIndex = "None"
-        endIndex = "None"
+        startIndex = 0
+        endIndex = 0
+        sectionsIndex = []
 
         for index, element in enumerate(structuredData["elements"]):
             if "/H1" in element["Path"]:
@@ -84,34 +95,48 @@ class PDFHandler:
                 elif "acknowledg" in sectionName or "reference" in sectionName:
                     endIndex = index
                     break
-
+     
         for H1_sectionIndex in H1_sections:
+            
             if H1_sectionIndex >= startIndex and H1_sectionIndex <= endIndex:
                 sections[H1_sectionIndex] = H1_sections[H1_sectionIndex]
-        return sections
+        
+        for index in sections:
+            sectionsIndex.append(index)
+        print('sectionNames',sections)
+        return sections,sectionsIndex
 
-    def getFilteredText(self):
-        sections = self.getSections()
+    def getFilteredTextBySection(self) :
+        sections, sectionsIndex = self.getSections()
         structuredData = self.getStructuredData()
-        sectionIndex = []
         sectionText = {}
 
-        for index in sections:
-            sectionIndex.append(index)
-
-        for x in range(len(sectionIndex) - 1):
+        for x in range(len(sectionsIndex) - 1):
             text = ""
 
             for raw_index, element in enumerate(structuredData["elements"]):
                 if "P" in element["Path"]:
-                    if raw_index >= sectionIndex[x] and raw_index < sectionIndex[x + 1]:
+                    if raw_index >= sectionsIndex[x] and raw_index < sectionsIndex[x + 1]:
                         text += element["Text"]
 
-            sectionName = sections[sectionIndex[x]]
+            sectionName = sections[sectionsIndex[x]]
             sectionText[sectionName] = text
         return sectionText
     
-    def get_unfiltered_pdf_text(pdf):
+    def getFilteredText(self) :
+        structuredData = self.getStructuredData()
+        sections,sectionsIndex = self.getSections()
+        fullText=''
+        
+        for index, element in enumerate(structuredData["elements"]):
+            if "P" in element["Path"]in element["Path"]:
+                if index >= sectionsIndex[0] and index < sectionsIndex[-1]:
+                    fullText += element["Text"]
+            
+        return fullText
+        
+    
+    def getUnfilteredText(pdf):
         text = ""
         pdf_reader = PdfReader(pdf)
         for page in pdf_reader.pages:
