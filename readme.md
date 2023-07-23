@@ -20,7 +20,9 @@ To install 'CIxD Aipowered Studying System', please follow these steps:
    pip install -r requirements.txt
    ```
 
-3. Obtain an API key from OpenAI, Replicate or HuggingFace nd add it to the `.env` file in the project directory.
+3. Obtain an API key from Adobe's Extract PDF, and at least one API Key from OpenAI, Replicate or HuggingFace.
+4. Add the API Key to the `.env` file in the project directory.
+
 
 ## Usage
 -----
