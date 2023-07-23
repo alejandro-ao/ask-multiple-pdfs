@@ -22,8 +22,7 @@ To install 'CIxD Aipowered Studying System', please follow these steps:
    ```
 
 3. Obtain an API key from Adobe's Extract PDF, and at least one API Key from OpenAI, Replicate or HuggingFace.
-4. Add the API Key to the `.env` file in the project directory.
-5. The  `.env` file should resemble something like the this:
+4. Add API Keys to the `.env` file in the project directory. The  `.env` file should resemble something like the this:
    ```
    OPENAI_API_KEY=''
    HUGGINGFACEHUB_API_TOKEN= ''
@@ -46,4 +45,4 @@ To use the system, follow these steps:
 
 3. Load your own PDF document into the app or select from the provided list.
 
-4. Select your preferred mode and interact.
+4. Select your preferred mode and interact with the UI. 
