@@ -7,12 +7,8 @@ from src.PDFHandler import PDFHandler
 from os import listdir
 from os.path import isfile, join
 from src.SwitchLLM import switchLLM
-from langchain import PromptTemplate
-from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain.schema import  HumanMessage, SystemMessage
-
+from src.Summarization import Summarization
 from src.config import LLMList
-
 
 def handle_userInput(user_question,response_container):
     response = streamlit.session_state.conversation({'question': user_question})
@@ -36,9 +32,10 @@ def main():
     #############others#######################
     load_dotenv()
     pdfHandler=PDFHandler('./ExtractTextInfoFromPDF.zip')
+    summarization= Summarization()
+    
 
     ########initialize#######################
-    
     streamlit.set_page_config(page_title=pageTitle,page_icon=pageIcon)
     streamlit.write(css, unsafe_allow_html=True)
     streamlit.header(header)
@@ -58,8 +55,8 @@ def main():
     if  "section_text" not in streamlit.session_state:
         streamlit.session_state.section_text = None
 
-    
     with container:
+        #유저가 텍스트 입력할 수 있는 곳 
         with streamlit.form(key='my_form', clear_on_submit=True):
             user_input = streamlit.text_area("You:", key='input', height=100)
             submit_button = streamlit.form_submit_button(label='Send')
@@ -71,12 +68,8 @@ def main():
              with response_container:
                 for i, conversation in enumerate(streamlit.session_state.chat_history):
                     if i % 2 == 0:
-                    #     streamlit.write(user_template.replace(
-                    # "{{MSG}}", conversation.content), unsafe_allow_html=True)
                         message(conversation.content, is_user=True, avatar_style= 'pixel-art',key=str(i) + '_user')
                     else:
-                        # streamlit.write(bot_template.replace(
-                        #     "{{MSG}}", conversation.content), unsafe_allow_html=True)
                         message(conversation.content, key=str(i))
         
     
@@ -92,8 +85,6 @@ def main():
             pdf_checkbox.append(streamlit.checkbox(pdf))
         
      ########interaction#######################
-
-        
     with streamlit.sidebar:
             if streamlit.button("Process"):
                 with streamlit.spinner("Processing"): 
@@ -117,35 +108,43 @@ def main():
                         pdfHandler.structurePDF('stream')
                         #full_text+=pdfHandler.getFilteredText()
                         streamlit.session_state.section_text =pdfHandler.getFilteredTextBySection()
-                 
+    
+    summarySectionButtonsList=[]
+    if(len(summarySectionButtonsList)==0 and  streamlit.session_state.section_text!= None):  
+        summarySectionButtonsList.append(streamlit.button('Summarize: ' + 'ALL'))
+        for sectionName in streamlit.session_state.section_text:
+            summarySectionButtonsList.append(streamlit.button('Summarize: ' + sectionName))
+            print(sectionName)
+    
+    for i, summaryButton in enumerate(summarySectionButtonsList):
+        #if a button is clicked except for the 'summarize All' Button
+        index=i-1
+        if summaryButton and i> 0:  
+            with streamlit.spinner("Processing"): 
+                print(index,summaryButton)
+                sectionTextList=[]
+                sectionNameList=[]
+                
+                for sectionName in streamlit.session_state.section_text:
+                    sectionNameList.append(sectionName)
+                    sectionTextList.append(streamlit.session_state.section_text[sectionName])
+                    
+                summarization.setFormattedPrompt(sectionTextList[index],sectionNameList[index])
+                summary_prompt=summarization.getFormattedPrompt()
                         
-                        
-    if streamlit.button('Summary By Section'):  
-        with streamlit.spinner("Processing"): 
-            template = """
-            Provide a summary of the following text in structured bullet point lists.
-            the text: {text}
-            In addition, add the provided title at the top of your response:
-            the title: {title}
-            
-            """
-            prompt=PromptTemplate(
-                input_variables=["text",'title'],
-                template=template
-                )             
-            for sectionName in streamlit.session_state.section_text:
-                summary_prompt=prompt.format(text=streamlit.session_state.section_text[sectionName],title=sectionName)
+                #primpt token length
                 num_tokens = llm.get_num_tokens(summary_prompt)
-                print (f"This prompt + {sectionName} section has {num_tokens} tokens")
-                if model_name=='ChatOpenAI':
-                    summary = llm.predict_messages([HumanMessage(content= summary_prompt)])
-                    with response_container:
-                        message(summary.content)
-                else:
-                    summary = llm(summary_prompt)
-                    with response_container:
-                        message(summary)
-
+                print (f"This prompt + {sectionNameList[index]} section has {num_tokens} tokens")
+                        
+                summary= summarization.getSummary(model_name,llm )
+                with response_container:
+                    message(summary)
+        
+        #summarize the entire text 
+        elif summaryButton and i==0:
+            print(i,summaryButton)
+            pass
+            
   #########################################
 if __name__ == '__main__': 
     main()
