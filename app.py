@@ -25,7 +25,7 @@ def main():
     pageIcon=':robot_face:'
     modeOptions=['Summary','Question Generation','Answer Generation', 'Topic Recommendation']
     header= "CIxD AIPowered Studying System :robot_face:"
-    fileUploadText="Upload your own PDF here and click on 'Process'"
+    fileUploadText="Upload a recent Cixd paper and click on 'Process'"
     accept_multiple_files=False
     subheaderText="CIxD Papers"
     captionText="Select one or more papers to learn."
@@ -95,7 +95,7 @@ def main():
 
         
     with streamlit.sidebar:
-            if streamlit.button("Process!"):
+            if streamlit.button("Process"):
                 with streamlit.spinner("Processing"): 
                     full_text=''
                     ##SummaryMode
