@@ -84,20 +84,36 @@ class PDFHandler:
         startIndex = 0
         endIndex = 0
         sectionsIndex = []
-
-        for index, element in enumerate(structuredData["elements"]):
-            if "/H1" in element["Path"]:
+        sectionHList=['/H1','/H2']
+        startFormat=''
+        endFormat=''
+        
+        ###################PDF Section detection is impossible########
+        for sectionH in sectionHList:
+            for index, element in enumerate(structuredData["elements"]):
+                    if sectionH in element["Path"]:
+                            sectionName = re.sub(r"\d+", "", element["Text"].lower().strip())
+                            if 'intro' in sectionName:
+                                startIndex = index
+                                startFormat=sectionH
+                            elif ("acknowledg" in sectionName or "reference" in sectionName) :
+                                endIndex = index
+                                endFormat=sectionH
+                                break
+            if(startIndex!=0 and endIndex!=0):
+                break
+                
+        for index, element in enumerate(structuredData["elements"]):  
+            if startFormat in element["Path"]:
                 sectionName = re.sub(r"\d+", "", element["Text"].lower().strip())
-                H1_sections[index] = element["Text"]
+                H1_sections[index] = element["Text"] 
+                    
+            if startFormat!=endFormat:  
+                if(index==endIndex):
+                    H1_sections[endIndex] = element["Text"] 
+                    
 
-                if self.startingSection in sectionName:
-                    startIndex = index
-                elif "acknowledg" in sectionName or "reference" in sectionName:
-                    endIndex = index
-                    break
-     
         for H1_sectionIndex in H1_sections:
-            
             if H1_sectionIndex >= startIndex and H1_sectionIndex <= endIndex:
                 sections[H1_sectionIndex] = H1_sections[H1_sectionIndex]
         
