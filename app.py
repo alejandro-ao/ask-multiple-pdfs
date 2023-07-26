@@ -1,7 +1,7 @@
 from st_chat_message import message
 import streamlit  #streamlit is the GUI 
 from src.htmlTemplates import css, bot_template, user_template
-from src.chain import get_conversation_chain, get_text_chunks, get_vectorstore
+from src.chain import get_conversation_chain, get_text_chunks, get_vectorstore, get_embeddings
 from dotenv import load_dotenv
 from src.PDFHandler import PDFHandler
 from os import listdir
@@ -9,8 +9,10 @@ from os.path import isfile, join
 from src.SwitchLLM import switchLLM
 from src.Summarization import Summarization
 from src.config import LLMList
+from langchain.chains import RetrievalQA
+from langchain import PromptTemplate
 
-def handle_userInput(user_question,response_container):
+def handle_userInput(user_question):
     response = streamlit.session_state.conversation({'question': user_question})
     streamlit.session_state.chat_history = response['chat_history']
     
@@ -96,11 +98,16 @@ def main():
                         if(checkedpdf):
                             pdfHandler.setPdfFile(pdfFolderPath+pdfFiles[index])
                             pdfHandler.structurePDF('local_file')
-                            #full_text+=pdfHandler.getFilteredText()
-                            #text_chunks = get_text_chunks(full_text)
-                            #vectorstore = get_vectorstore(text_chunks)
-                            #streamlit.session_state.conversation = get_conversation_chain(
-                            #vectorstore,llm)
+                            full_text+=pdfHandler.getFilteredText()
+                            text_chunks = get_text_chunks(full_text)
+                            
+                            vectorstore = get_vectorstore(text_chunks)
+                          
+                            #print(result)
+                            
+                            # streamlit.session_state.conversation = get_conversation_chain(
+                            # vectorstore,llm)
+                            
                             streamlit.session_state.section_text =pdfHandler.getFilteredTextBySection()
                             
                     if(pdf_docs):
@@ -108,6 +115,7 @@ def main():
                         pdfHandler.structurePDF('stream')
                         #full_text+=pdfHandler.getFilteredText()
                         streamlit.session_state.section_text =pdfHandler.getFilteredTextBySection()
+                        
     
     summarySectionButtonsList=[]
     if(len(summarySectionButtonsList)==0 and  streamlit.session_state.section_text!= None):  
