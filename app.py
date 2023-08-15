@@ -1,3 +1,14 @@
+# !git clone https://github.com/alejandro-ao/ask-multiple-pdfs
+# !pip install -r ask-multiple-pdfs/requirements.txt
+# !streamlit run app.py  (how to rin this app)
+# %load app.py  in order to modify
+print ('hello')
+import os
+os.environ['OPENAI_API_KEY'] = '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'
+#with open('app.py', 'r+') as f:  The next 3 lines load it to a colab cell
+#    code_content = f.read()
+#print(code_content)
+import ipdb
 import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
@@ -66,6 +77,7 @@ def handle_userinput(user_question):
 
 def main():
     load_dotenv()
+    ipdb.set_trace()
     st.set_page_config(page_title="Chat with multiple PDFs",
                        page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
@@ -99,6 +111,7 @@ def main():
                 st.session_state.conversation = get_conversation_chain(
                     vectorstore)
 
-
 if __name__ == '__main__':
+    ipdb.set_trace()
     main()
+    ipdb.set_trace()
