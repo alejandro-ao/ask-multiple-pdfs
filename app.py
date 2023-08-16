@@ -1,14 +1,16 @@
-import ipdb
+# import ipdb
 # !git clone https://github.com/alejandro-ao/ask-multiple-pdfs
+# export PATH="/home/codespace/.local/lib/python3.10/site-packages/bin:$PATH"
 # !pip install -r ask-multiple-pdfs/requirements.txt
 # !streamlit run app.py  (how to rin this app)
 # %load app.py  in order to modify
 import os
-os.environ['OPENAI_API_KEY'] = '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'
+os.environ['OPENAI_API_KEY'] = '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'
 #with open('app.py', 'r+') as f:  The next 3 lines load it to a colab cell
 #    code_content = f.read()
 #print(code_content)
-
+import langchain
+langchain.verbose = False
 import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
@@ -20,7 +22,7 @@ from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from langchain.llms import HuggingFaceHub
-
+#OPENAI_API_KEY="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"
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
