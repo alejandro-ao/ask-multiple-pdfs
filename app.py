@@ -1,6 +1,5 @@
 import streamlit as st
 from dotenv import load_dotenv
-from PyPDF2 import PdfReader
 import pypdfium2 as pdfium
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
@@ -92,7 +91,6 @@ def main():
             with st.spinner("Processing"):
                 # get pdf text
                 raw_text = get_pdf_text(pdf_docs)
-                print(raw_text)
                 # get the text chunks
                 text_chunks = get_text_chunks(raw_text)
 
