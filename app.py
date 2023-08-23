@@ -1,6 +1,7 @@
 import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
+import pypdfium2 as pdfium
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
@@ -10,12 +11,15 @@ from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
 from langchain.llms import HuggingFaceHub
 
+
 def get_pdf_text(pdf_docs):
     text = ""
     for pdf in pdf_docs:
-        pdf_reader = PdfReader(pdf)
-        for page in pdf_reader.pages:
-            text += page.extract_text()
+        pdf_reader = pdfium.PdfDocument(pdf)
+        for i in range(len(pdf_reader)):
+            page = pdf_reader.get_page(i)
+            textpage = page.get_textpage()
+            text += textpage.get_text_range() + "\n"
     return text
 
 
@@ -88,7 +92,7 @@ def main():
             with st.spinner("Processing"):
                 # get pdf text
                 raw_text = get_pdf_text(pdf_docs)
-
+                print(raw_text)
                 # get the text chunks
                 text_chunks = get_text_chunks(raw_text)
 
