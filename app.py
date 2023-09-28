@@ -52,6 +52,10 @@ def get_conversation_chain(vectorstore):
 
 
 def handle_userinput(user_question):
+    if st.session_state.conversation is None:
+        st.warning("Please upload and process the PDFs first.")
+        return
+
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
 
