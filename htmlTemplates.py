@@ -32,7 +32,7 @@ css = '''
 '''
 
 bot_avatar = "avatars/aisupport.png"
-encoded_image = get_base64_encoded_image(bot_avatar)
+encoded_image_bot = get_base64_encoded_image(bot_avatar)
 bot_template = '''
 <div class="chat-message bot">
     <div class="avatar">
@@ -40,13 +40,16 @@ bot_template = '''
     </div>
     <div class="message">{{MSG}}</div>
 </div>
-'''.format("data:image/png;base64," + encoded_image)
+'''.format("data:image/png;base64," + encoded_image_bot)
 
+
+user_avatar = "avatars/user.png"
+encoded_image_user = get_base64_encoded_image(user_avatar)
 user_template = '''
 <div class="chat-message user">
     <div class="avatar">
-        <img src="https://i.ibb.co/rdZC7LZ/Photo-logo-1.png">
+        <img src="{}">
     </div>    
     <div class="message">{{MSG}}</div>
 </div>
-'''
+'''.format("data:image/png;base64," + encoded_image_user)
