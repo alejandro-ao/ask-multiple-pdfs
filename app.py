@@ -1,3 +1,6 @@
+import os
+
+import openai
 import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
@@ -38,7 +41,7 @@ def get_vectorstore(text_chunks):
 
 
 def get_conversation_chain(vectorstore):
-    llm = ChatOpenAI()
+    llm = ChatOpenAI(model_name="gpt-3.5-turbo")
     # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
 
     memory = ConversationBufferMemory(
@@ -46,7 +49,8 @@ def get_conversation_chain(vectorstore):
     conversation_chain = ConversationalRetrievalChain.from_llm(
         llm=llm,
         retriever=vectorstore.as_retriever(),
-        memory=memory
+        memory=memory,
+        # return_source_documents=True
     )
     return conversation_chain
 
@@ -59,8 +63,8 @@ def handle_userinput(user_question):
     response = st.session_state.conversation({'question': user_question})
     st.session_state.chat_history = response['chat_history']
 
-    for i, message in enumerate(st.session_state.chat_history):
-        if i % 2 == 0:
+    for i, message in enumerate(reversed(st.session_state.chat_history)):
+        if i % 2 == 1:
             st.write(user_template.replace(
                 "{{MSG}}", message.content), unsafe_allow_html=True)
         else:
@@ -69,7 +73,7 @@ def handle_userinput(user_question):
 
 
 def main():
-    load_dotenv()
+    load_dotenv(override=True)
     st.set_page_config(page_title="Chat with multiple PDFs",
                        page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
