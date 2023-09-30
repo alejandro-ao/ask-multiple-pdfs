@@ -36,11 +36,11 @@ encoded_image_bot = get_base64_encoded_image(bot_avatar)
 bot_template = '''
 <div class="chat-message bot">
     <div class="avatar">
-        <img src="{}" style="max-height: 78px; max-width: 78px; border-radius: 50%; object-fit: cover;">
+        <img src="{img_source}" style="max-height: 78px; max-width: 78px; border-radius: 50%; object-fit: cover;">
     </div>
     <div class="message">{{MSG}}</div>
 </div>
-'''.format("data:image/png;base64," + encoded_image_bot)
+'''.replace("{img_source}","data:image/png;base64," + encoded_image_bot)
 
 
 user_avatar = "avatars/user.png"
@@ -48,8 +48,8 @@ encoded_image_user = get_base64_encoded_image(user_avatar)
 user_template = '''
 <div class="chat-message user">
     <div class="avatar">
-        <img src="{}">
+        <img src="{img_source}">
     </div>    
     <div class="message">{{MSG}}</div>
 </div>
-'''.format("data:image/png;base64," + encoded_image_user)
+'''.replace("{img_source}", "data:image/png;base64," + encoded_image_user)
