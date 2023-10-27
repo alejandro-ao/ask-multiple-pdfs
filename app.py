@@ -4,14 +4,13 @@ module (instead of script -> python.exe): streamlit
 script parameters: run app.py
 """
 
-# import os
 import streamlit as st
 from dotenv import load_dotenv
 from PyPDF2 import PdfReader
 from langchain.text_splitter import CharacterTextSplitter
 from langchain.embeddings import OpenAIEmbeddings, HuggingFaceInstructEmbeddings
 from langchain.vectorstores import FAISS
-# from langchain.chat_models import ChatOpenAI
+from langchain.chat_models import ChatOpenAI
 from langchain.memory import ConversationBufferMemory
 from langchain.chains import ConversationalRetrievalChain
 from htmlTemplates import css, bot_template, user_template
@@ -28,7 +27,7 @@ def get_pdf_text(pdf_docs):
 
 
 def get_text_chunks(text):
-    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=4000, chunk_overlap=200, length_function=len)
+    text_splitter = CharacterTextSplitter(separator="\n", chunk_size=5000, chunk_overlap=500, length_function=len)
     chunks = text_splitter.split_text(text)
     return chunks
 
@@ -41,51 +40,52 @@ def get_vectorstore(text_chunks):
     return vectorstore
 
 
-def get_conversation_chain(ss, vectorstore):
+def get_conversation_chain(vectorstore):
     # Check leaderboard here: https://huggingface.co/spaces/HuggingFaceH4/open_llm_leaderboard
     # llm = ChatOpenAI()
     # llm = HuggingFaceHub(repo_id="google/flan-t5-xxl", model_kwargs={"temperature":0.5, "max_length":512})
-    llm = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-alpha", model_kwargs={"temperature": 0.5,
-                                                                                "max_length": 512,
-                                                                                'max_new_tokens': 512})
-
-    ss.memory = ConversationBufferMemory(memory_key='chat_history', return_messages=True)
+    llm = HuggingFaceHub(repo_id="HuggingFaceH4/zephyr-7b-alpha",
+                         model_kwargs={"temperature": 0.1,
+                                       "max_new_tokens": 1000})   # ,"max_length": 1000})
+    memory = ConversationBufferMemory(memory_key='chat_history',
+                                      return_messages=True)
     conversation_chain = ConversationalRetrievalChain.from_llm(llm=llm,
                                                                retriever=vectorstore.as_retriever(),
-                                                               memory=ss.memory)
+                                                               memory=memory)
     return conversation_chain
 
 
-def save_question_clear_prompt(ss):
+def save_question_and_clear_prompt(ss):
     ss.user_question = ss.prompt_bar
-    ss.prompt_bar = None  # clearing the prompt bar after clicking enter to avoid automatic re-submissions
+    ss.prompt_bar = ""  # clearing the prompt bar after clicking enter to prevent automatic re-submissions
 
 
-def get_response_and_write(ss):
-    ss.conversation({'question': ss.user_question})  # This is what gets the response!
-    for i, message in enumerate(ss.conversation.memory.chat_memory.messages):
-        if i % 2 == 0:
-            st.write(user_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
-        else:
-            st.write(bot_template.replace("{{MSG}}", message.content), unsafe_allow_html=True)
+def write_chat(msgs):  # Write the Q&A in a pretty chat format
+    for i, msg in enumerate(msgs):
+        if i % 2 == 0:  # it's a question
+            st.write(user_template.replace("{{MSG}}", msg.content), unsafe_allow_html=True)
+        else:  # it's an answer
+            st.write(bot_template.replace("{{MSG}}", msg.content), unsafe_allow_html=True)
 
 
 def main():
-    ss = st.session_state
-    load_dotenv()
+    load_dotenv()  # loads api keys
+    ss = st.session_state  # https://docs.streamlit.io/library/api-reference/session-state
+
+    # Page design
     st.set_page_config(page_title="Chat with the FEED Phase reports", page_icon=":bridge_at_night:")
     st.write(css, unsafe_allow_html=True)
     st.header("Chat with the FEED Phase reports :bridge_at_night:")
 
-    # Initializing session states
-    if "conversation" not in ss:
-        ss.conversation = None
+    # Initializing session state variables
+    if "conversation_chain" not in ss:
+        ss.conversation_chain = None  # the main variable storing the llm, retriever and memory
     if "prompt_bar" not in ss:
-        ss.prompt_bar = None
+        ss.prompt_bar = ""
     if "user_question" not in ss:
-        ss.user_question = None
-    if "doc_process_status" not in ss:
-        ss.doc_process_status = None
+        ss.user_question = ""
+    if "docs_are_processed" not in ss:
+        ss.docs_are_processed = False
 
     with st.sidebar:
         st.subheader("Your documents")
@@ -95,18 +95,25 @@ def main():
                 raw_text = get_pdf_text(pdf_docs)  # get pdf text
                 text_chunks = get_text_chunks(raw_text)  # get the text chunks
                 vectorstore = get_vectorstore(text_chunks)  # create vector store
-                ss.conversation = get_conversation_chain(ss, vectorstore)  # create conversation chain
-            st.write('Documents processed')
+                ss.conversation_chain = get_conversation_chain(vectorstore)  # create conversation chain
+                ss.docs_are_processed = True
+        if ss.docs_are_processed:
+            st.text('Documents processed')
 
-    st.text_input("Ask a question here:", key='prompt_bar', on_change=save_question_clear_prompt(ss))
+    st.text_input("Ask a question here:", key='prompt_bar', on_change=save_question_and_clear_prompt(ss))
 
     if ss.user_question:
-        get_response_and_write(ss)
+        ss.conversation_chain({'question': ss.user_question})  # This is what gets the response from the LLM!
+        if hasattr(ss.conversation_chain.memory, 'chat_memory'):
+            chat = ss.conversation_chain.memory.chat_memory.messages
+            write_chat(chat)
 
-    if ss.conversation:
-        if ss.conversation.memory.chat_memory.messages:
-            if st.button("Clear & forget conversation"):
-                ss.memory.clear()
+    if hasattr(ss.conversation_chain, 'memory'):  # There is memory if the documents have been processed
+        if hasattr(ss.conversation_chain.memory, 'chat_memory'):  # There is chat_memory if questions have been asked
+            if st.button("Forget conversation"):  # adding a button
+                ss.conversation_chain.memory.chat_memory.clear()  # clears the ConversationBufferMemory
+
+    # st.write(ss)  # use this when debugging for visualizing the session_state variables
 
 
 if __name__ == '__main__':
