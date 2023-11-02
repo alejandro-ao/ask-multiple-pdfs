@@ -74,9 +74,9 @@ def main():
     ss = st.session_state  # https://docs.streamlit.io/library/api-reference/session-state
 
     # Page design
-    st.set_page_config(page_title="Chat with the FEED Phase reports", page_icon=":bridge_at_night:")
+    st.set_page_config(page_title="Chat with multiple PDFs", page_icon=":books:")
     st.write(css, unsafe_allow_html=True)
-    st.header("Chat with the FEED Phase reports :bridge_at_night:")
+    st.header("Chat with multiple PDFs :books:")
 
     # Initializing session state variables
     if "conversation_chain" not in ss:
