@@ -1,7 +1,8 @@
 """
-Configuration in Pycharm that allows for both Run & Debug:
-module (instead of script -> python.exe): streamlit
-script parameters: run app.py
+For PyCharm users:
+    The "configuration" in Pycharm that allows for both Run & Debug:
+        use the module: streamlit (instead of script -> python.exe)
+        script parameters: run app.py
 """
 
 import streamlit as st
