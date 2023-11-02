@@ -92,7 +92,7 @@ def main():
 
     with st.sidebar:
         st.subheader("Your documents")
-        pdf_docs = st.file_uploader("Upload your PDFs here and click on 'Process'", accept_multiple_files=True)
+        pdf_docs = st.file_uploader("Upload your PDFs here and click 'Process'", accept_multiple_files=True, type="pdf")
         if st.button("Process") and pdf_docs:
             with st.spinner("Processing"):
                 raw_text = get_pdf_text(pdf_docs)  # get pdf text
