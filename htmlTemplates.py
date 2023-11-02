@@ -19,7 +19,7 @@ css = '''
   object-fit: cover;
 }
 .chat-message .message {
-  width: 80%;
+  width: 100%;
   padding: 0 1.5rem;
   color: #fff;
 }
@@ -37,7 +37,7 @@ bot_template = '''
 user_template = '''
 <div class="chat-message user">
     <div class="avatar">
-        <img src="https://i.ibb.co/rdZC7LZ/Photo-logo-1.png">
+        <img src="https://www.freeiconspng.com/uploads/grab-vector-graphic-person-icon--imagebasket-13.png" width="350" alt="Grab Vector Graphic Person Icon | imagebasket" /></a>
     </div>    
     <div class="message">{{MSG}}</div>
 </div>
