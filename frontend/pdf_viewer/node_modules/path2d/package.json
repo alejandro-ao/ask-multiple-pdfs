@@ -1,0 +1,65 @@
+{
+  "name": "path2d",
+  "version": "0.2.2",
+  "description": "Path2D API for node. Can be used for server-side rendering with canvas",
+  "keywords": [
+    "Path2D",
+    "polyfill",
+    "canvas",
+    "roundRect"
+  ],
+  "homepage": "https://github.com/nilzona/path2d-polyfill#readme",
+  "bugs": {
+    "url": "https://github.com/nilzona/path2d-polyfill/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/nilzona/path2d-polyfill.git"
+  },
+  "license": "MIT",
+  "author": "nilzona",
+  "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "main": "dist/index.cjs",
+  "module": "./dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "prettier": "@qlik/prettier-config",
+  "devDependencies": {
+    "@qlik/eslint-config": "0.8.1",
+    "@qlik/prettier-config": "^0.4.18",
+    "@qlik/tsconfig": "^0.2.7",
+    "@swc/core": "^1.9.1",
+    "@types/node": "22.9.0",
+    "@vitest/coverage-v8": "2.1.4",
+    "eslint": "^8.57.1",
+    "prettier": "^3.3.3",
+    "rimraf": "6.0.1",
+    "tsup": "^8.3.5",
+    "typescript": "^5.6.3",
+    "vitest": "2.1.4"
+  },
+  "engines": {
+    "node": ">=6"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "build": "tsup-node src/index.ts --target node18 --format esm,cjs --dts",
+    "check-types": "tsc --noEmit",
+    "format:check": "prettier --check '**' --ignore-unknown",
+    "format:write": "prettier --write '**' --ignore-unknown",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
+    "test:watch": "vitest",
+    "watch": "pnpm build --watch"
+  }
+}

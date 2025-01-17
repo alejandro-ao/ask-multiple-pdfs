@@ -1,0 +1,65 @@
+{
+  "name": "make-event-props",
+  "version": "1.6.2",
+  "description": "Returns an object with on-event callback props curried with provided args.",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "source": "./src/index.ts",
+  "types": "./dist/cjs/index.d.ts",
+  "exports": {
+    "import": "./dist/esm/index.js",
+    "require": "./dist/cjs/index.js"
+  },
+  "scripts": {
+    "build": "yarn build-esm && yarn build-cjs && yarn build-cjs-package",
+    "build-esm": "tsc --project tsconfig.build.json --outDir dist/esm",
+    "build-cjs": "tsc --project tsconfig.build.json --outDir dist/cjs --module commonjs --verbatimModuleSyntax false",
+    "build-cjs-package": "echo '{\n  \"type\": \"commonjs\"\n}' > dist/cjs/package.json",
+    "clean": "rimraf dist",
+    "lint": "eslint .",
+    "prepack": "yarn clean && yarn build",
+    "prettier": "prettier --check . --cache",
+    "test": "yarn lint && yarn tsc && yarn prettier && yarn unit",
+    "tsc": "tsc --noEmit",
+    "unit": "vitest"
+  },
+  "keywords": [
+    "react",
+    "event",
+    "event props"
+  ],
+  "author": {
+    "name": "Wojciech Maj",
+    "email": "kontakt@wojtekmaj.pl"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@types/react": "*",
+    "eslint": "^8.26.0",
+    "eslint-config-wojtekmaj": "^0.9.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^14.0.0",
+    "prettier": "^3.0.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rimraf": "^3.0.0",
+    "typescript": "^5.0.0",
+    "vitest": "^0.34.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/wojtekmaj/make-event-props.git"
+  },
+  "funding": "https://github.com/wojtekmaj/make-event-props?sponsor=1",
+  "packageManager": "yarn@3.1.0"
+}

@@ -1,0 +1,31 @@
+{
+  "name": "wordwrapjs",
+  "author": "Lloyd Brookes <75pound@gmail.com>",
+  "version": "3.0.0",
+  "description": "Word-wrapping for javascript.",
+  "repository": "https://github.com/75lb/wordwrapjs.git",
+  "license": "MIT",
+  "keywords": [
+    "word",
+    "line",
+    "wrap",
+    "text",
+    "columns",
+    "wordwrap"
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "scripts": {
+    "test": "node test.js",
+    "docs": "jsdoc2md -t jsdoc2md/README.hbs index.js > README.md; echo"
+  },
+  "devDependencies": {
+    "jsdoc-to-markdown": "^3.0.0",
+    "test-runner": "~0.4.0"
+  },
+  "dependencies": {
+    "reduce-flatten": "^1.0.1",
+    "typical": "^2.6.1"
+  }
+}

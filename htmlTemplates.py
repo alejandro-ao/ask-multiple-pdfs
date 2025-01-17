@@ -1,7 +1,11 @@
 css = '''
 <style>
 .chat-message {
-    padding: 1.5rem; border-radius: 0.5rem; margin-bottom: 1rem; display: flex
+    padding: 1rem; 
+    border-radius: 0.5rem; 
+    margin-bottom: 1rem; 
+    display: flex;
+    max-width: 100%;
 }
 .chat-message.user {
     background-color: #2b313e
@@ -10,25 +14,27 @@ css = '''
     background-color: #475063
 }
 .chat-message .avatar {
-  width: 20%;
+  width: 15%;
 }
 .chat-message .avatar img {
-  max-width: 78px;
-  max-height: 78px;
+  max-width: 48px;
+  max-height: 48px;
   border-radius: 50%;
   object-fit: cover;
 }
 .chat-message .message {
-  width: 80%;
-  padding: 0 1.5rem;
+  width: 85%;
+  padding: 0 1rem;
   color: #fff;
+  font-size: 0.95rem;
 }
+</style>
 '''
 
 bot_template = '''
 <div class="chat-message bot">
     <div class="avatar">
-        <img src="https://i.ibb.co/cN0nmSj/Screenshot-2023-05-28-at-02-37-21.png" style="max-height: 78px; max-width: 78px; border-radius: 50%; object-fit: cover;">
+        <img src="https://static.wixstatic.com/media/0e9f63_efefe52050da4ddbb4d24bee75da80cf~mv2.png/v1/fill/w_448,h_110,al_c,q_85,usm_0.66_1.00_0.01,enc_avif,quality_auto/DraftyAI%20Logo_AI%20for%20Immigration%20Lawyers.png" style="max-height: 48px; max-width: 48px; object-fit: contain; background-color: white; padding: 2px;">
     </div>
     <div class="message">{{MSG}}</div>
 </div>
@@ -37,7 +43,7 @@ bot_template = '''
 user_template = '''
 <div class="chat-message user">
     <div class="avatar">
-        <img src="https://i.ibb.co/rdZC7LZ/Photo-logo-1.png">
+        <img src="https://openclipart.org/download/247319/abstract-user-flat-3.svg" style="max-height: 48px; max-width: 48px;">
     </div>    
     <div class="message">{{MSG}}</div>
 </div>

@@ -1,0 +1,35 @@
+{
+  "name": "command-line-usage",
+  "author": "Lloyd Brookes <75pound@gmail.com>",
+  "version": "5.0.5",
+  "description": "Generates command-line usage information",
+  "repository": "https://github.com/75lb/command-line-usage.git",
+  "license": "MIT",
+  "files": [
+    "lib",
+    "index.js"
+  ],
+  "keywords": [
+    "terminal",
+    "command line",
+    "usage",
+    "generator"
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "scripts": {
+    "docs": "jsdoc2md -t jsdoc2md/README.hbs --no-gfm index.js > README.md; echo",
+    "test": "test-runner test/*.js"
+  },
+  "dependencies": {
+    "array-back": "^2.0.0",
+    "chalk": "^2.4.1",
+    "table-layout": "^0.4.3",
+    "typical": "^2.6.1"
+  },
+  "devDependencies": {
+    "jsdoc-to-markdown": "^4.0.1",
+    "test-runner": "^0.5.0"
+  }
+}

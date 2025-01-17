@@ -1,0 +1,24 @@
+{
+  "name": "test-value",
+  "author": "Lloyd Brookes <75pound@gmail.com>",
+  "version": "3.0.0",
+  "description": "Test a value in a variety of ways",
+  "repository": "https://github.com/75lb/test-value.git",
+  "license": "MIT",
+  "keywords": [],
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "dependencies": {
+    "array-back": "^2.0.0",
+    "typical": "^2.6.1"
+  },
+  "scripts": {
+    "test": "test-runner test.js",
+    "docs": "jsdoc2md -t README.hbs index.js > README.md; echo"
+  },
+  "devDependencies": {
+    "jsdoc-to-markdown": "^3.0.2",
+    "test-runner": "^0.4.1"
+  }
+}

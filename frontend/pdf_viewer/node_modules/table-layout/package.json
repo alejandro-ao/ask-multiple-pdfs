@@ -1,0 +1,41 @@
+{
+  "name": "table-layout",
+  "author": "Lloyd Brookes <75pound@gmail.com>",
+  "version": "0.4.5",
+  "description": "Stylable text tables, handling ansi colour. Useful for console output.",
+  "repository": "https://github.com/75lb/table-layout.git",
+  "license": "MIT",
+  "keywords": [
+    "wrap",
+    "terminal",
+    "data",
+    "columns",
+    "format",
+    "json",
+    "command line"
+  ],
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "scripts": {
+    "test": "test-runner test/*.js",
+    "docs": "jsdoc2md -t jsdoc2md/README.hbs index.js -p list --member-index-format list > README.md; echo",
+    "cover": "istanbul cover test-runner -- test/*.js && cat coverage/lcov.info | ./node_modules/.bin/coveralls && rm -rf coverage; echo"
+  },
+  "dependencies": {
+    "array-back": "^2.0.0",
+    "deep-extend": "~0.6.0",
+    "lodash.padend": "^4.6.1",
+    "typical": "^2.6.1",
+    "wordwrapjs": "^3.0.0"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.4",
+    "jsdoc-to-markdown": "^4.0.1",
+    "test-runner": "~0.5.0"
+  },
+  "files": [
+    "index.js",
+    "lib/*.js"
+  ]
+}

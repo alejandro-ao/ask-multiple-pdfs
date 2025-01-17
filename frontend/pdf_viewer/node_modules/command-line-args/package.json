@@ -1,0 +1,41 @@
+{
+  "name": "command-line-args",
+  "version": "5.0.2",
+  "description": "A mature, feature-complete library to parse command-line options.",
+  "repository": "https://github.com/75lb/command-line-args.git",
+  "scripts": {
+    "test": "test-runner test/*.js test/internals/*.js",
+    "docs": "jsdoc2md index.js > doc/API.md && jsdoc2md lib/option-definition.js > doc/option-definition.md",
+    "cover": "istanbul cover ./node_modules/.bin/test-runner test/*.js test/internals/*.js && cat coverage/lcov.info | ./node_modules/.bin/coveralls #&& rm -rf coverage; echo"
+  },
+  "keywords": [
+    "argv",
+    "parse",
+    "argument",
+    "args",
+    "option",
+    "options",
+    "parser",
+    "parsing",
+    "cli",
+    "command",
+    "line"
+  ],
+  "author": "Lloyd Brookes <75pound@gmail.com>",
+  "license": "MIT",
+  "engines": {
+    "node": ">=4.0.0"
+  },
+  "devDependencies": {
+    "coveralls": "^3.0.0",
+    "jsdoc-to-markdown": "^4.0.1",
+    "test-runner": "^0.5.0"
+  },
+  "dependencies": {
+    "argv-tools": "^0.1.1",
+    "array-back": "^2.0.0",
+    "find-replace": "^2.0.1",
+    "lodash.camelcase": "^4.3.0",
+    "typical": "^2.6.1"
+  }
+}

@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>PDF Viewer Basic</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <style>
+        body { 
+            margin: 0; 
+            background: #525659;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+        #status {
+            color: white;
+            font-family: monospace;
+            margin: 10px;
+            padding: 10px;
+            background: rgba(0,0,0,0.5);
+        }
+        canvas {
+            margin: 10px;
+            background: white;
+        }
+    </style>
+</head>
+<body>
+    <div id="status">Initializing viewer...</div>
+    <div id="pdf-container"></div>
+
+    <script>
+        const status = document.getElementById('status');
+        function updateStatus(message) {
+            console.log(message);
+            status.textContent = message;
+        }
+
+        // Initialize PDF.js
+        updateStatus('Loading PDF.js...');
+        pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+        let currentPdf = null;
+        let currentPage = 1;
+
+        async function renderPage(pageNumber) {
+            try {
+                if (!currentPdf) return;
+                
+                updateStatus(`Rendering page ${pageNumber}...`);
+                const page = await currentPdf.getPage(pageNumber);
+                
+                // Prepare canvas
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                const viewport = page.getViewport({scale: 1.5});
+                
+                canvas.width = viewport.width;
+                canvas.height = viewport.height;
+                
+                // Clear container and add canvas
+                const container = document.getElementById('pdf-container');
+                container.innerHTML = '';
+                container.appendChild(canvas);
+                
+                await page.render({
+                    canvasContext: context,
+                    viewport: viewport
+                }).promise;
+                
+                currentPage = pageNumber;
+                updateStatus(`Showing page ${pageNumber} of ${currentPdf.numPages}`);
+            } catch (error) {
+                updateStatus(`Error rendering page: ${error.message}`);
+            }
+        }
+
+        async function loadPDF(base64Data) {
+            try {
+                updateStatus('Starting PDF load...');
+                
+                // Convert base64 to array buffer
+                const data = atob(base64Data);
+                updateStatus('Base64 decoded...');
+                
+                const array = new Uint8Array(data.length);
+                for (let i = 0; i < data.length; i++) {
+                    array[i] = data.charCodeAt(i);
+                }
+                
+                updateStatus('Loading document...');
+                currentPdf = await pdfjsLib.getDocument({data: array}).promise;
+                updateStatus(`PDF loaded. Pages: ${currentPdf.numPages}`);
+                
+                // Render first page
+                await renderPage(1);
+                
+                window.parent.postMessage({type: 'pdfLoaded', success: true}, '*');
+                
+            } catch (error) {
+                const errorMessage = `Error: ${error.message}`;
+                console.error(errorMessage);
+                updateStatus(errorMessage);
+                window.parent.postMessage({
+                    type: 'pdfError',
+                    error: error.message
+                }, '*');
+            }
+        }
+
+        // Listen for messages
+        window.addEventListener('message', function(event) {
+            console.log('Viewer received message:', event.data);
+            if (event.data.type === 'loadPDF') {
+                if (event.data.base64Data) {
+                    loadPDF(event.data.base64Data);
+                }
+            } else if (event.data.type === 'setPage') {
+                const pageNum = event.data.page;
+                if (currentPdf && pageNum >= 1 && pageNum <= currentPdf.numPages) {
+                    renderPage(pageNum);
+                }
+            }
+        });
+
+        // Signal ready
+        updateStatus('Viewer ready');
+        window.parent.postMessage({type: 'viewerReady'}, '*');
+    </script>
+</body>
+</html>

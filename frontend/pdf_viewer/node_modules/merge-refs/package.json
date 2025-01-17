@@ -1,0 +1,79 @@
+{
+  "name": "merge-refs",
+  "version": "1.3.0",
+  "description": "A function that merges React refs into one.",
+  "type": "module",
+  "sideEffects": false,
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "source": "./src/index.ts",
+  "types": "./dist/cjs/index.d.ts",
+  "exports": {
+    "import": "./dist/esm/index.js",
+    "require": "./dist/cjs/index.js"
+  },
+  "scripts": {
+    "build": "yarn build-esm && yarn build-cjs && yarn build-cjs-package",
+    "build-esm": "tsc --project tsconfig.build.json --outDir dist/esm",
+    "build-cjs": "tsc --project tsconfig.build.json --outDir dist/cjs --module commonjs --moduleResolution node --verbatimModuleSyntax false",
+    "build-cjs-package": "echo '{\n  \"type\": \"commonjs\"\n}' > dist/cjs/package.json",
+    "clean": "rimraf dist",
+    "format": "prettier --check . --cache",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx",
+    "prepack": "yarn clean && yarn build",
+    "test": "yarn lint && yarn tsc && yarn format && yarn unit",
+    "tsc": "tsc",
+    "unit": "vitest"
+  },
+  "keywords": [
+    "react",
+    "react ref",
+    "react refs",
+    "merge"
+  ],
+  "author": {
+    "name": "Wojciech Maj",
+    "email": "kontakt@wojtekmaj.pl"
+  },
+  "license": "MIT",
+  "devDependencies": {
+    "@testing-library/react": "^15.0.0",
+    "@types/react": "*",
+    "eslint": "^8.56.0",
+    "eslint-config-wojtekmaj": "^1.0.0",
+    "happy-dom": "^12.6.0",
+    "husky": "^9.0.0",
+    "lint-staged": "^15.0.0",
+    "prettier": "^3.2.0",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "rimraf": "^3.0.0",
+    "typescript": "^5.4.2",
+    "vitest": "^1.0.2"
+  },
+  "peerDependencies": {
+    "@types/react": "^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0"
+  },
+  "peerDependenciesMeta": {
+    "@types/react": {
+      "optional": true
+    }
+  },
+  "resolutions": {
+    "eslint-plugin-import": "npm:eslint-plugin-i@^2.28.0"
+  },
+  "publishConfig": {
+    "access": "public",
+    "provenance": true
+  },
+  "files": [
+    "dist",
+    "src"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wojtekmaj/merge-refs.git"
+  },
+  "funding": "https://github.com/wojtekmaj/merge-refs?sponsor=1",
+  "packageManager": "yarn@4.1.1"
+}
