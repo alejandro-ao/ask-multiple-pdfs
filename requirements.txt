@@ -1,4 +1,4 @@
-langchain==0.0.184
+langchain>=0.1
 PyPDF2==3.0.1
 python-dotenv==1.0.0
 streamlit==1.18.1
@@ -12,3 +12,6 @@ tiktoken==0.4.0
 # uncomment to use instructor embeddings
 # InstructorEmbedding==1.0.1
 # sentence-transformers==2.2.2
+langchain-community>=0.0.20
+langchain-openai>=0.0.5
+langchain-text-splitters>=0.0.1
